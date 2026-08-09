@@ -27,7 +27,7 @@ export const color = {
   },
   success: "#1f9d55",
   warning: "#e0a100",
-  danger: "#d64545",
+  danger: "#541d8f",
   info: "#2f80ed",
 } as const;
 
