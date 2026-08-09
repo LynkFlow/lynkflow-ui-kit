@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    /* Environment */
+    "module": "nodenext",
+    "target": "esnext",
+    "lib": ["DOM", "ESNext"],
+
+    /* React */
+    "jsx": "react-jsx",
+
+    /* Type checking */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Modules */
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+
+    /* Output */
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    /* Misc */
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+
+    /* Test globals only — keeps the many transitive @types/* packages
+       (node, jsdom, istanbul-*, yargs, ...) that Jest and its deps pull
+       in from leaking into this browser-target library's global scope.
+       "types" only resolves packages published under node_modules/@types
+       (typeRoots) — @testing-library/jest-dom ships its own bundled
+       types instead, so its matcher augmentation (toBeInTheDocument(),
+       etc.) is pulled in via a plain import in src/test/jest-dom.d.ts,
+       not listed here. */
+    "types": ["jest"]
+  },
+
+  "include": ["src"]
+}
