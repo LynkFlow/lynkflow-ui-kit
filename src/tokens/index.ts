@@ -51,7 +51,24 @@ export const radius = {
 
 export const typography = {
   fontFamily: {
+    /** Latin / default UI font. */
     base: "'Inter', system-ui, -apple-system, sans-serif",
+
+    /**
+     * Arabic UI font. Kept as a SEPARATE stack rather than appended to
+     * `base`, because Inter ships two Arabic glyphs -- just enough that the
+     * browser's font matcher prefers Inter for Arabic text and renders it
+     * badly, instead of falling through to a font that can actually draw the
+     * script (positional forms, ligatures, diacritics).
+     *
+     * Applied globally by the ui-kit stylesheet via `html[lang="ar"]`, which
+     * works because the Shell owns `<html lang>` (see i18n.md). Individual
+     * components never switch fonts themselves.
+     *
+     * The app must actually LOAD this font (self-hosted @font-face or a
+     * webfont link) -- a token only names it.
+     */
+    arabic: "'IBM Plex Sans Arabic', 'Noto Sans Arabic', system-ui, sans-serif",
   },
   fontSize: {
     xs: "12px",

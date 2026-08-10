@@ -28,6 +28,12 @@
     "noUncheckedSideEffectImports": true,
     "skipLibCheck": true,
 
+    /* tsup's dts bundler injects `baseUrl` internally, which TypeScript 6
+       reports as deprecated (TS5101). This flag acknowledges it so the
+       single-step `tsup --dts` build works. Remove once tsup stops setting
+       baseUrl, or when moving to TypeScript 7.1+. See tooling.md. */
+    "ignoreDeprecations": "6.0",
+
     /* Test globals only — keeps the many transitive @types/* packages
        (node, jsdom, istanbul-*, yargs, ...) that Jest and its deps pull
        in from leaking into this browser-target library's global scope.

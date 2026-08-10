@@ -1,2 +1,22 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
+
+/*
+ * Arabic typography.
+ *
+ * Tailwind's preflight (shipped in this stylesheet) sets the base font on
+ * <html>. That base is Inter, which contains only two Arabic glyphs -- enough
+ * that the font matcher picks Inter for Arabic text and renders it badly,
+ * rather than falling through to a font that can draw the script properly.
+ *
+ * Scoping by `html[lang="ar"]` works because the Shell owns the <html lang>
+ * attribute (.claude/rules/i18n.md). One rule switches the whole app; no
+ * component does anything font-related, and no JS is involved.
+ *
+ * The consuming app must LOAD the font -- self-host it or add a webfont
+ * link. This rule only says which family to use once it's available.
+ */
+html[lang="ar"] {
+  font-family:
+    "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+}

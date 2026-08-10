@@ -1,13 +1,13 @@
 export default {
   // Formatting: every staged file Prettier understands.
-  "*.{ts,tsx,js,jsx,json,md,css}": ["prettier --write"],
+  "*.{ts,tsx,js,jsx,mjs,cjs,json,md,css}": ["prettier --write"],
 
-  // Type-check + run only the tests related to staged TS/TSX files.
-  // tsc --noEmit can't be scoped to specific files (TypeScript needs the
-  // whole program), so it ignores the injected file list and always runs
-  // in full; jest --findRelatedTests uses the dependency graph to run only
-  // the test files relevant to what changed, instead of the whole suite.
+  // Lint + type-check + run only the tests related to staged TS/TSX files.
+  // ESLint is scoped to the staged files; tsc --noEmit can't be scoped
+  // (TypeScript needs the whole program) so it always runs in full, as does
+  // the coverage check.
   "*.{ts,tsx}": (stagedFiles) => [
+    `eslint --max-warnings=0 ${stagedFiles.map((f) => `"${f}"`).join(" ")}`,
     `jest --bail --findRelatedTests --passWithNoTests ${stagedFiles.map((f) => `"${f}"`).join(" ")}`,
     "tsc --noEmit",
   ],

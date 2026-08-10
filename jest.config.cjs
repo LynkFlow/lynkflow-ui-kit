@@ -17,6 +17,27 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
     "!src/**/*.test.{ts,tsx}",
-    "!src/index.ts",
+    // .d.ts files carry no executable code.
+    "!src/**/*.d.ts",
+    // Barrel re-export files -- tests import the component directly, not
+    // through index.ts, so these always read as 0% despite the real file
+    // being fully covered. See .claude/rules/testing.md.
+    "!src/**/index.{ts,tsx}",
+    // Plain data, no behavior to assert beyond "the values are what they
+    // are" -- testing.md exempts this explicitly; covered indirectly
+    // through the components that consume the tokens.
+    "!src/tokens/**",
   ],
+  // Higher bar than an app repo: testing.md requires EVERY ui-kit component to
+  // cover default render, every variant/size/state, interaction handlers, and
+  // ARIA attributes -- and every MFE on the platform depends on this package,
+  // so an untested component here breaks things far from where it was written.
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+  },
 };
