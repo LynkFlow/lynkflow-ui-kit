@@ -1,6 +1,8 @@
 import { forwardRef } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
+import { cn } from "../../utils/index.js";
+
 export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -65,14 +67,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={rest.type ?? "button"}
         disabled={isDisabled}
         aria-busy={isLoading || undefined}
-        className={[
+        className={cn(
           baseClassName,
           sizeClassName[size],
           variantClassName[variant],
+          // Last, so a caller's utility beats the variant's in the same
+          // conflict group (colour, spacing, radius...) while the base
+          // layout/focus/disabled classes survive. See utils/cn.ts.
           className,
-        ]
-          .filter(Boolean)
-          .join(" ")}
+        )}
         {...rest}
       >
         {isLoading && (

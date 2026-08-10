@@ -109,3 +109,38 @@ describe("Button", () => {
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
 });
+
+describe("Button className merging", () => {
+  it("lets a caller's conflicting utility override the variant's", () => {
+    render(
+      <Button variant="primary" className="bg-neutral-900">
+        Save
+      </Button>,
+    );
+    const button = screen.getByRole("button", { name: "Save" });
+    // Without tailwind-merge both would be present and stylesheet order would
+    // decide which paints -- so assert the loser is actually gone.
+    expect(button).toHaveClass("bg-neutral-900");
+    expect(button).not.toHaveClass("bg-primary-500");
+  });
+
+  it("keeps base layout, focus and disabled classes when overridden", () => {
+    render(<Button className="bg-neutral-900">Save</Button>);
+    const button = screen.getByRole("button", { name: "Save" });
+    expect(button).toHaveClass("inline-flex");
+    expect(button).toHaveClass("focus-visible:ring-2");
+    expect(button).toHaveClass("disabled:opacity-60");
+  });
+
+  it("lets a caller override size padding without losing the rest", () => {
+    render(
+      <Button size="md" className="px-10">
+        Save
+      </Button>,
+    );
+    const button = screen.getByRole("button", { name: "Save" });
+    expect(button).toHaveClass("px-10");
+    expect(button).not.toHaveClass("px-4");
+    expect(button).toHaveClass("py-2.5");
+  });
+});
