@@ -44,7 +44,11 @@
     "prepare": "husky",
     "prepublishOnly": "npm run build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "update:lynkflow": "npm install @lynkflow/config@latest",
+    "release:patch": "npm version patch && npm publish && git push --follow-tags",
+    "release:minor": "npm version minor && npm publish && git push --follow-tags",
+    "release:major": "npm version major && npm publish && git push --follow-tags"
   },
   "peerDependencies": {
     "react": "^19.0.0",
