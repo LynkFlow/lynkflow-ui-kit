@@ -17,6 +17,5 @@
  * link. This rule only says which family to use once it's available.
  */
 html[lang="ar"] {
-  font-family:
-    "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
 }

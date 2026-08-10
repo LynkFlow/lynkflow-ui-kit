@@ -23,13 +23,10 @@ describe("Button", () => {
       ["secondary", "border-primary-500"],
       ["danger", "bg-danger"],
       ["ghost", "bg-transparent"],
-    ] as const)(
-      "applies the %s variant's classes",
-      (variant, expectedClass) => {
-        render(<Button variant={variant}>Save</Button>);
-        expect(screen.getByRole("button").className).toContain(expectedClass);
-      },
-    );
+    ] as const)("applies the %s variant's classes", (variant, expectedClass) => {
+      render(<Button variant={variant}>Save</Button>);
+      expect(screen.getByRole("button").className).toContain(expectedClass);
+    });
   });
 
   describe("size", () => {

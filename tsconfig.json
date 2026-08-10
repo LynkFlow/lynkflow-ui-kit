@@ -1,38 +1,25 @@
 {
+  "extends": "@lynkflow/config/tsconfig/library.json",
   "compilerOptions": {
-    /* Environment */
-    "module": "nodenext",
-    "target": "esnext",
-    "lib": ["DOM", "ESNext"],
+    /* library.json already sets: module/moduleResolution "nodenext",
+       target "esnext", strict, noUncheckedIndexedAccess,
+       exactOptionalPropertyTypes, verbatimModuleSyntax, isolatedModules,
+       moduleDetection "force", declaration, declarationMap, sourceMap,
+       skipLibCheck, ignoreDeprecations "6.0" (tsup --dts / TS5101 — see
+       tooling.md). Everything below is what's specific to THIS repo:
+       React, and this repo's own strictness/output choices. */
 
     /* React */
     "jsx": "react-jsx",
-
-    /* Type checking */
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    /* Modules */
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
+    "lib": ["DOM", "ESNext"],
 
     /* Output */
     "rootDir": "src",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
 
-    /* Misc */
+    /* noUncheckedSideEffectImports is deliberately NOT in the shared base --
+       lynkflow-mfe-template needs it off (see its tsconfig for why); this
+       repo keeps it on. Genuinely per-repo, not a candidate to centralize. */
     "noUncheckedSideEffectImports": true,
-    "skipLibCheck": true,
-
-    /* tsup's dts bundler injects `baseUrl` internally, which TypeScript 6
-       reports as deprecated (TS5101). This flag acknowledges it so the
-       single-step `tsup --dts` build works. Remove once tsup stops setting
-       baseUrl, or when moving to TypeScript 7.1+. See tooling.md. */
-    "ignoreDeprecations": "6.0",
 
     /* Test globals only — keeps the many transitive @types/* packages
        (node, jsdom, istanbul-*, yargs, ...) that Jest and its deps pull
