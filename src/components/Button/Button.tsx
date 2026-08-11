@@ -1,7 +1,9 @@
 import { forwardRef } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-import { cn } from "../../utils/index.js";
+// TEMP DEBUG: cn() (clsx + tailwind-merge) bypassed with plain string join,
+// to rule it out as the cause of the styling bug. NOT a permanent change --
+// revert to `import { cn } from "../../utils/index.js";` once resolved.
 
 export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -67,15 +69,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={rest.type ?? "button"}
         disabled={isDisabled}
         aria-busy={isLoading || undefined}
-        className={cn(
+        className={[
           baseClassName,
           sizeClassName[size],
           variantClassName[variant],
-          // Last, so a caller's utility beats the variant's in the same
-          // conflict group (colour, spacing, radius...) while the base
-          // layout/focus/disabled classes survive. See utils/cn.ts.
           className,
-        )}
+        ]
+          .filter(Boolean)
+          .join(" ")}
         {...rest}
       >
         {isLoading && (
