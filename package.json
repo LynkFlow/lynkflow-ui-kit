@@ -10,7 +10,10 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": ["*.css", "./dist/styles.css"],
+  "sideEffects": [
+    "*.css",
+    "./dist/styles.css"
+  ],
   "engines": {
     "node": ">=22.22.1"
   },
@@ -50,7 +53,8 @@
     "update:lynkflow": "npm install @lynkflow/config@latest",
     "release:patch": "npm version patch && npm publish && git push --follow-tags",
     "release:minor": "npm version minor && npm publish && git push --follow-tags",
-    "release:major": "npm version major && npm publish && git push --follow-tags"
+    "release:major": "npm version major && npm publish && git push --follow-tags",
+    "publish:local": "npm publish --registry http://localhost:4873"
   },
   "peerDependencies": {
     "react": "^19.0.0",
