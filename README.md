@@ -54,7 +54,7 @@ npm install
 npm run typecheck   # tsc --noEmit
 npm run test        # Jest + Testing Library
 npm run test:coverage
-npm run build       # JS (tsup) + types (tsc) + CSS (Tailwind CLI) -> dist/
+npm run build       # JS + types (tsup, single step on TS 6) + CSS (Tailwind CLI) -> dist/
 npm run format       # Prettier --write
 npm run format:check
 ```
