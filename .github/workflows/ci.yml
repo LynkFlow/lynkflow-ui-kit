@@ -1,0 +1,61 @@
+name: CI
+
+# Same cross-repo-checkout need as lynkflow-types, and for the same reason:
+# @lynkflow/config isn't published yet, so it only resolves via a sibling
+# `file:`-style link locally. See lynkflow-types/.github/workflows/ci.yml's
+# header comment for the full reasoning -- not repeated here.
+#
+# Requires a repo secret: CROSS_REPO_PAT (classic PAT, `repo` scope) for the
+# same reason. Add it under Settings -> Secrets and variables -> Actions.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lynkflow-ui-kit
+    steps:
+      - name: Checkout lynkflow-ui-kit
+        uses: actions/checkout@v4
+        with:
+          path: lynkflow-ui-kit
+
+      - name: Checkout lynkflow-config (unpublished sibling dependency)
+        uses: actions/checkout@v4
+        with:
+          repository: LynkFlow/lynkflow-config
+          token: ${{ secrets.CROSS_REPO_PAT }}
+          path: lynkflow-config
+
+      - name: Use Node.js (from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "lynkflow-ui-kit/.nvmrc"
+          cache: "npm"
+          cache-dependency-path: lynkflow-ui-kit/package-lock.json
+
+      - name: Use a token-free .npmrc (install-links only, no registry auth needed here)
+        run: cp .npmrc.example .npmrc
+
+      - name: Install
+        run: npm install --install-links
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test (with coverage report -- not a gate here, see testing.md)
+        run: npm run test:coverage
+
+      # tsup (JS + types) + Tailwind CLI (dist/styles.css) -- see
+      # docs/packages-guide.md's ui-kit section.
+      - name: Build
+        run: npm run build
