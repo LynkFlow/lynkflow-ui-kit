@@ -40,9 +40,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: lynkflow-ui-kit/package-lock.json
 
-      - name: Use a token-free .npmrc (install-links only, no registry auth needed here)
-        run: cp .npmrc.example .npmrc
-
+      # .npmrc is already committed (install-links=true, a ${LYNKFLOW_NPM_TOKEN}
+      # reference that stays unresolved/empty here -- harmless, since this
+      # repo never actually fetches from that registry: @lynkflow/config
+      # resolves via the sibling checkout above, not a network call).
       - name: Install
         run: npm install --install-links
 
