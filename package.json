@@ -54,7 +54,9 @@
     "release:patch": "npm version patch && npm publish && git push --follow-tags",
     "release:minor": "npm version minor && npm publish && git push --follow-tags",
     "release:major": "npm version major && npm publish && git push --follow-tags",
-    "publish:local": "npm publish --registry http://localhost:4873"
+    "publish:local": "npm publish --userconfig .npmrc.verdaccio --registry=http://localhost:4873 --@lynkflow:registry=http://localhost:4873",
+    "publish:local:force": "node scripts/publish-local-force.mjs",
+    "install:local": "node scripts/install-local.mjs"
   },
   "peerDependencies": {
     "react": "^19.0.0",
