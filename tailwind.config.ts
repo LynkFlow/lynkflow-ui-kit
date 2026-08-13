@@ -22,6 +22,10 @@ export default {
         success: color.success,
         warning: color.warning,
         danger: color.danger,
+        // Additive: enables `bg-danger-subtle` / `text-danger-subtle` for a
+        // future Alert/Banner component -- see the Figma-sourced error
+        // banner background in tokens/index.ts.
+        "danger-subtle": color.dangerSubtle,
         info: color.info,
       },
       borderRadius: {
