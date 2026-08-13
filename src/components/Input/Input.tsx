@@ -227,9 +227,25 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             >
               {label}
               {isRequired && (
-                <span className="ms-0.5 text-danger" aria-hidden="true">
-                  *
-                </span>
+                // The leading `{" "}` is a real space text node, not just
+                // the `ms-0.5` margin below -- JSX collapses the whitespace
+                // between `{label}` and this expression across the line
+                // break, so without it the label's actual text content is
+                // "Email*" (no space) even though the margin makes it LOOK
+                // spaced. That silently broke every getByLabelText("Email
+                // *")-style query (FormInput.test.tsx caught this the first
+                // time the real Jest suite ran successfully end-to-end on a
+                // machine, not in this sandbox -- see tooling.md/testing.md's
+                // repeated "verify on a real machine" notes). Keeping the
+                // margin too, not removing it -- it's what gives the exact
+                // visual gap; the space is for text content/accessibility
+                // parity, not visual spacing.
+                <>
+                  {" "}
+                  <span className="ms-0.5 text-danger" aria-hidden="true">
+                    *
+                  </span>
+                </>
               )}
             </label>
           )}
