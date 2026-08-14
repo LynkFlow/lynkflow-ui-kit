@@ -4,35 +4,15 @@ import type { ClipboardEvent, KeyboardEvent } from "react";
 import { cn } from "../../utils/index.js";
 
 export interface CodeDigitProps {
-  /**
-   * Number of digit boxes. Defaults to 6 -- a typical length for an
-   * email/SMS verification code (business-domain.md's Account Activation
-   * flow). Pass e.g. 4 for a shorter PIN-style code.
-   */
+  /** Number of digit boxes. Defaults to 6. */
   length?: number;
-  /**
-   * The code entered so far, as a plain digit string (shorter than
-   * `length` while the user is still typing, or if they clear a middle
-   * box). Fully controlled -- like Input, this component holds no copy of
-   * the value itself; the consumer's state is the only source of truth.
-   */
+  /** The code entered so far. Fully controlled -- no internal copy of the value. */
   value: string;
-  /**
-   * Fires with the new full value every time a digit is typed, deleted,
-   * pasted, or dropped in by autofill.
-   */
+  /** Fires with the new full value on type, delete, paste, or autofill. */
   onChange: (value: string) => void;
-  /**
-   * Validation message. Mirrors Input's `error` prop: every box's border
-   * switches to the danger color and this message renders below the
-   * group. Purely presentational -- it doesn't block further input.
-   */
+  /** Validation message. Mirrors Input's `error` prop. */
   error?: string;
-  /**
-   * Accessible label for the whole group. There's no room for Input's
-   * floating label across N separate boxes, so this becomes the group's
-   * `aria-label` instead. Defaults to "Verification code".
-   */
+  /** Accessible label for the whole group. Defaults to "Verification code". */
   ariaLabel?: string;
   disabled?: boolean;
   className?: string;
@@ -45,20 +25,7 @@ function onlyDigits(raw: string): string {
   return raw.replace(/\D/g, "");
 }
 
-/**
- * A row of single-digit boxes for entering a verification/OTP code.
- *
- * This is the canonical code-entry field for every LynkFlow microfrontend
- * that needs one (account activation, 2FA, etc. -- business-domain.md).
- * Do not build a bespoke digit-box row in an MFE; import this one.
- *
- * Typing, pasting a full code, and most autofill paths (mobile "code from
- * Messages" suggestions) are all handled -- see the three handlers below
- * for why there are three of them instead of one.
- *
- * Consuming apps must import the compiled stylesheet once (typically in
- * the Shell): `import "@lynkflow/ui-kit/styles.css";`
- */
+/** A row of single-digit boxes for entering a verification/OTP code. The canonical code-entry field for every microfrontend. */
 export function CodeDigit({
   length = 6,
   value,
@@ -89,9 +56,7 @@ export function CodeDigit({
     [],
   );
 
-  // Derived, not stored: `value` is the single source of truth (the
-  // consumer's own state), same as Input never keeping its own copy of
-  // what's typed.
+  // Derived, not stored -- value is the single source of truth.
   const digits = Array.from({ length }, (_, index) => value[index] ?? "");
 
   function focusIndex(index: number) {
@@ -99,10 +64,8 @@ export function CodeDigit({
     inputRefs.current[clamped]?.focus();
   }
 
-  // Briefly marks `indices` as "just filled" so their box plays the pop
-  // animation, then clears them once it's done. A ref (not React state)
-  // tracks the timeout so it can be cancelled if the component unmounts
-  // mid-animation -- otherwise a late setState after unmount would warn.
+  // Marks indices as "just filled" for the pop animation, then clears them.
+  // Timeout tracked in a ref so it can be cancelled on unmount.
   function bounce(indices: number[]) {
     if (indices.length === 0) return;
     setBouncingIndices((previous) => new Set([...previous, ...indices]));
@@ -125,9 +88,7 @@ export function CodeDigit({
     if (digit && wasEmpty) bounce([index]);
   }
 
-  // Fills boxes starting at `startIndex` with each character of `pasted`,
-  // in order -- used by both a real paste and the onChange fallback below
-  // when more than one digit arrives at once.
+  // Fills boxes from startIndex with each character of pasted, in order.
   function distributeFrom(startIndex: number, pasted: string) {
     const nextDigits = [...digits];
     const filledIndices: number[] = [];
@@ -143,14 +104,9 @@ export function CodeDigit({
     focusIndex(Math.min(cursor, length - 1));
   }
 
-  // Primary entry path. Intercepting the keystroke itself (rather than
-  // reading the DOM value afterwards) is what makes "type a new digit over
-  // an already-filled box" unambiguous: `event.key` is always exactly the
-  // one character just pressed, so there's never a need to guess whether a
-  // 2-character value means "overwrite" or "the next box's digit arrived
-  // early." Every handled key calls `preventDefault()`, so the box's real
-  // DOM value never changes this way -- only `onChange` (via `setDigitAt`)
-  // drives what's displayed.
+  // Primary entry path -- intercepts the keystroke itself (event.key) so
+  // overwriting an already-filled box is unambiguous. preventDefault() on
+  // every handled key means the DOM value only ever changes via onChange.
   function handleKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
     if (disabled) return;
     if (/^[0-9]$/.test(event.key)) {
@@ -184,11 +140,8 @@ export function CodeDigit({
     if (pasted) distributeFrom(index, pasted);
   }
 
-  // Fallback for whatever `onKeyDown` doesn't cover -- mobile "autofill
-  // from Messages" and IME composition can both set a box's value directly
-  // rather than firing the individual keydown events above, so this can't
-  // be removed even though normal typing rarely reaches it (every digit
-  // keystroke already preventDefault()s before the DOM value would change).
+  // Fallback for autofill/IME, which can set a box's value directly
+  // without firing the keydown events above.
   function handleChange(index: number, raw: string) {
     if (disabled) return;
     const digitsOnly = onlyDigits(raw);
@@ -198,8 +151,7 @@ export function CodeDigit({
       setDigitAt(index, digitsOnly);
       focusIndex(index + 1);
     } else {
-      // More than one digit landed at once -- a paste that slipped past
-      // onPaste, or autofill dropping the whole code into one box.
+      // Multiple digits at once -- a paste that slipped past onPaste, or autofill.
       distributeFrom(index, digitsOnly);
     }
   }
