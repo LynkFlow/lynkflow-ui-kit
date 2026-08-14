@@ -1,34 +1,40 @@
 /**
- * LynkFlow design tokens.
- *
- * These are the raw, framework-agnostic values consumed by @lynkflow/ui-kit
- * components. Application repos should not redefine these values locally —
- * import them from here instead.
+ * LynkFlow design tokens -- raw, framework-agnostic values consumed by
+ * @lynkflow/ui-kit components. Application repos import these rather than
+ * redefining them locally. Most values are measured from the real Figma
+ * login flow (see individual comments); `success`/`info` are still
+ * placeholders pending a real source.
  */
 
 export const color = {
   primary: {
-    50: "#eef4ff",
-    100: "#d9e6ff",
-    300: "#8fb3ff",
-    500: "#3366ff",
-    600: "#254edb",
-    700: "#1a3aad",
-    900: "#0f2166",
+    // 50/100/300: derived tints, not measured (Figma had no light tint).
+    50: "#edfdf6",
+    100: "#d1fae9",
+    300: "#6deeb8",
+    400: "#128c58", // Input field focus border
+    500: "#0b5d3b", // primary "Login" button fill
+    600: "#08462c", // button hover shade
+    // 700/900: derived, extrapolated along the 500->600 step.
+    700: "#052f1d",
+    900: "#02130c",
   },
   neutral: {
     0: "#ffffff",
     50: "#f7f8fa",
     100: "#eceef1",
+    200: "#e4e8ed", // Input field border
     300: "#c3c9d1",
+    400: "#a3abb8", // Input field label color
     500: "#7c8592",
     700: "#3f4552",
-    900: "#14161a",
+    900: "#0f1115", // "Welcome Back" heading text
   },
-  success: "#1f9d55",
-  warning: "#e0a100",
-  danger: "#541d8f",
-  info: "#2f80ed",
+  success: "#1f9d55", // placeholder, not yet Figma-backed
+  warning: "#b7791f",
+  danger: "#b42318", // "Account Locked" error banner text
+  dangerSubtle: "#fee4e2", // same banner's background fill
+  info: "#2f80ed", // placeholder, not yet Figma-backed
 } as const;
 
 export const spacing = {
@@ -55,18 +61,9 @@ export const typography = {
     base: "'Inter', system-ui, -apple-system, sans-serif",
 
     /**
-     * Arabic UI font. Kept as a SEPARATE stack rather than appended to
-     * `base`, because Inter ships two Arabic glyphs -- just enough that the
-     * browser's font matcher prefers Inter for Arabic text and renders it
-     * badly, instead of falling through to a font that can actually draw the
-     * script (positional forms, ligatures, diacritics).
-     *
-     * Applied globally by the ui-kit stylesheet via `html[lang="ar"]`, which
-     * works because the Shell owns `<html lang>` (see i18n.md). Individual
-     * components never switch fonts themselves.
-     *
-     * The app must actually LOAD this font (self-hosted @font-face or a
-     * webfont link) -- a token only names it.
+     * Separate stack, not appended to `base` -- Inter ships just enough
+     * Arabic glyphs to get picked by the font matcher and render badly.
+     * Applied via `html[lang="ar"]`; the app must actually load this font.
      */
     arabic: "'IBM Plex Sans Arabic', 'Noto Sans Arabic', system-ui, sans-serif",
   },
@@ -76,12 +73,20 @@ export const typography = {
     md: "16px",
     lg: "20px",
     xl: "24px",
+    // Measured: the "Welcome Back" heading on the login frame.
+    "2xl": "32px",
   },
   fontWeight: {
     regular: 400,
     medium: 500,
     semibold: 600,
     bold: 700,
+  },
+  /** Unitless multipliers (x fontSize), measured ratios from the login flow. */
+  lineHeight: {
+    snug: 1.43,
+    normal: 1.5,
+    relaxed: 1.83,
   },
 } as const;
 

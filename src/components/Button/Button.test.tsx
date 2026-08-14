@@ -100,6 +100,13 @@ describe("Button", () => {
     );
   });
 
+  it("applies a subtle press-scale on active, guarded by motion-safe", () => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole("button", { name: "Save" });
+    expect(button.className).toContain("motion-safe:active:scale-[0.98]");
+    expect(button.className).toContain("disabled:active:scale-100");
+  });
+
   it("forwards a ref to the underlying <button> element", () => {
     const ref = createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Save</Button>);

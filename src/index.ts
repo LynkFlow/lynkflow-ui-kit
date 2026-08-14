@@ -6,6 +6,23 @@ export type {
   ButtonSize,
 } from "./components/Button/index.js";
 
+export { Input } from "./components/Input/index.js";
+export type { InputProps, InputSize } from "./components/Input/index.js";
+
+export { CodeDigit } from "./components/CodeDigit/index.js";
+export type { CodeDigitProps } from "./components/CodeDigit/index.js";
+
+export { Logo } from "./components/Logo/index.js";
+export type {
+  LogoProps,
+  LogoVariant,
+  LogoOrientation,
+  LogoSize,
+  LogoSizePreset,
+  LogoColor,
+  LogoColorPreset,
+} from "./components/Logo/index.js";
+
 // Design tokens
 export { tokens, color, spacing, radius, typography } from "./tokens/index.js";
 export type { Tokens } from "./tokens/index.js";
