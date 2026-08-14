@@ -4,63 +4,31 @@ import { cn } from "../../utils/index.js";
 export type LogoVariant = "full" | "mark" | "text";
 export type LogoOrientation = "horizontal" | "vertical";
 export type LogoSizePreset = "sm" | "md" | "lg";
-/**
- * A named preset, or a custom mark height in pixels for full control over
- * the rendered size. A number is interpreted as the MARK's height -- the
- * wordmark's height and the mark/wordmark gap both scale proportionally
- * from it (see TEXT_TO_MARK_RATIO / GAP_TO_MARK_RATIO below), the same way
- * the three preset sizes do, so a custom size still looks like the same
- * logo, just bigger or smaller, not a different lockup.
- */
+/** A named preset, or a custom mark height in px -- wordmark height and gap scale proportionally from it. */
 export type LogoSize = LogoSizePreset | number;
 export type LogoColorPreset = "brand" | "dark" | "white" | "current";
 
-/**
- * A named preset, or any literal CSS color value (a hex code, `rgb(...)`,
- * a CSS custom property reference, etc.) for full custom control. The
- * `& {}` intersection is a TS trick that keeps preset names showing up in
- * autocomplete -- a plain `LogoColorPreset | string` union collapses to
- * `string` and loses that.
- */
+/** A named preset, or any literal CSS color. `& {}` keeps preset names in autocomplete (plain union with `string` would collapse it). */
 export type LogoColor = LogoColorPreset | (string & {});
 
 export interface LogoProps {
   /** Which part of the lockup to render. Defaults to `"full"` (mark + wordmark). */
   variant?: LogoVariant;
-  /** Layout when `variant="full"`. Defaults to `"horizontal"` (mark beside the wordmark). */
+  /** Layout when `variant="full"`. Defaults to `"horizontal"`. */
   orientation?: LogoOrientation;
-  /**
-   * Overall size: a named preset (`"sm"` | `"md"` | `"lg"`), or a number
-   * giving the mark's exact height in pixels for full custom control (the
-   * wordmark height and mark/wordmark gap scale proportionally from it).
-   * Defaults to `"md"`.
-   */
+  /** Named preset, or a number giving the mark's exact height in px. Defaults to `"md"`. */
   size?: LogoSize;
-  /**
-   * Color of the mark (the "Y" glyph). A named preset (`"brand"` | `"dark"`
-   * | `"white"` | `"current"`) or any literal CSS color value. Defaults to
-   * `"brand"`.
-   */
+  /** Color of the mark. Defaults to `"brand"`. */
   markColor?: LogoColor;
-  /**
-   * Color of the wordmark ("LynkFlow" text). Same accepted values as
-   * `markColor`. Defaults to `"dark"`.
-   */
+  /** Color of the wordmark. Defaults to `"dark"`. */
   textColor?: LogoColor;
-  /**
-   * Accessible name announced for the whole lockup regardless of which
-   * variant is rendered -- the mark/text SVGs themselves are always
-   * `aria-hidden` so this is the only thing screen readers get. Override
-   * only if this specific instance needs different context.
-   */
+  /** Accessible name for the whole lockup -- the SVGs themselves are `aria-hidden`. */
   ariaLabel?: string;
   className?: string;
 }
 
-// Resolved from the real brand assets (green-logo.svg / colored-logo.svg /
-// white-logo.svg / brand-logo.svg), not invented -- see each preset's own
-// source token. "current" opts out of a fixed color entirely so the mark or
-// text can inherit whatever `color` the surrounding CSS already sets.
+// From the real brand assets (green/colored/white/brand-logo.svg). "current"
+// lets the mark or text inherit the surrounding CSS `color` instead.
 const colorPresets: Record<LogoColorPreset, string> = {
   brand: tokenColor.primary[500],
   dark: tokenColor.neutral[900],
@@ -76,10 +44,8 @@ function resolveLogoColor(
   return colorPresets[input as LogoColorPreset] ?? input;
 }
 
-// Discrete Tailwind height classes per PRESET size, not a computed/arbitrary
-// runtime value -- these are literal strings Tailwind's build-time scanner
-// can see. Used only when `size` is one of the three named presets; a
-// custom numeric size bypasses these entirely (see resolveSizing below).
+// Literal Tailwind classes per preset size (build-time scanner needs them
+// as literal strings). A custom numeric size bypasses these entirely.
 const markSizeClassName: Record<LogoSizePreset, string> = {
   sm: "h-5 w-auto",
   md: "h-7 w-auto",
@@ -98,13 +64,8 @@ const gapClassName: Record<LogoSizePreset, string> = {
   lg: "gap-4",
 };
 
-// The mark/text ratio (text is ~1.064x the mark's height) and the
-// gap-to-mark-height ratio (~0.377x) are both taken from the real combined
-// artwork (colored-logo.svg), not guessed -- computed via svgpathtools
-// against the actual path data. The three presets above snap this same
-// ratio to the platform's spacing scale for the gap rather than an
-// arbitrary fractional value; a custom numeric size uses the precise ratio
-// directly since there's no discrete scale to snap to.
+// Ratios from the real combined artwork (colored-logo.svg), computed via
+// svgpathtools against the actual path data, not guessed.
 const TEXT_TO_MARK_RATIO = 1.0638;
 const GAP_TO_MARK_RATIO = 0.3774;
 
@@ -139,12 +100,8 @@ function resolveSizing(size: LogoSize): ResolvedSizing {
   };
 }
 
-// Mark ("Y" glyph). viewBox and path data are verbatim from green-logo.svg
-// -- that file is already a tight, correctly-centered crop of just the
-// mark (verified: its own 66x71 canvas already accounts for the stroke's
-// half-width margin around the path centerline). stroke="currentColor"
-// replaces the source file's hardcoded #0B5D3B so color is controlled by
-// the `style` below instead.
+// Verbatim path data from green-logo.svg; stroke="currentColor" replaces
+// the source's hardcoded fill so color is controlled via `style` below.
 function LogoMarkGlyph() {
   return (
     <>
@@ -176,14 +133,9 @@ function LogoMarkGlyph() {
   );
 }
 
-// Wordmark ("LynkFlow"). Path data is verbatim from colored-logo.svg's two
-// text paths (fill="#0F1115" there, now "currentColor") -- "Lynk" (bold)
-// and "Flow" (regular) are two separate, untouched path strings; the visual
-// weight difference is already baked into their geometry, not a font
-// property. They're wrapped in a translating <g> rather than hand-edited,
-// so the letter shapes themselves are never touched -- only the group's
-// position shifts to align with this component's own tight viewBox
-// (computed from the real path data via svgpathtools, not eyeballed).
+// Verbatim path data from colored-logo.svg's two text paths ("Lynk" bold,
+// "Flow" regular -- weight is baked into geometry, not a font property).
+// Wrapped in a translating <g> so the paths themselves stay untouched.
 function LogoTextGlyph() {
   return (
     <g transform="translate(-103.352 -16.390)">
@@ -200,23 +152,12 @@ function LogoTextGlyph() {
 }
 
 /**
- * LynkFlow's brand logo -- the mark, the wordmark, or both, in any color and
- * either orientation, from one component.
- *
- * This is the only place the brand assets (`green-logo.svg`, `white-logo.svg`,
- * `colored-logo.svg`, `brand-logo.svg`) live in code -- every real exported
- * file is reproducible as a prop combination on this component rather than
- * a separate asset:
+ * LynkFlow's brand logo -- mark, wordmark, or both, any color, either
+ * orientation. Every exported brand asset is a prop combination here:
  * - `green-logo.svg`   -> `<Logo variant="mark" markColor="brand" />`
  * - `white-logo.svg`   -> `<Logo variant="mark" markColor="white" />`
- * - `colored-logo.svg` -> `<Logo />` (the defaults: brand mark, dark text)
+ * - `colored-logo.svg` -> `<Logo />` (defaults: brand mark, dark text)
  * - `brand-logo.svg`   -> `<Logo markColor="white" textColor="white" />`
- *
- * The colored square backdrop sometimes shown behind a white/vertical
- * lockup (e.g. an app-icon-style treatment) is a container the consuming
- * page applies itself (e.g. `bg-primary-500 rounded-lg p-6`) -- it isn't
- * part of this component, the same way `Button` doesn't own the page
- * background it sits on.
  */
 export function Logo({
   variant = "full",

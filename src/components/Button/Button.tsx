@@ -20,13 +20,9 @@ export interface ButtonProps extends Omit<
   children: ReactNode;
 }
 
-// `transition` (not `transition-colors`) so the hover color change and the
-// press-scale below animate together -- see styling.md's
-// "Micro-interactions" section for why this is the platform-wide pattern,
-// not a one-off. The scale is gated behind `motion-safe:` because it's a
-// transform -- reduced-motion users should keep the color feedback without
-// the movement. `disabled:active:scale-100` keeps a disabled button from
-// visibly "pressing" even in browsers that still match :active on it.
+// `transition` (not `transition-colors`) so hover color and press-scale
+// animate together (styling.md's Micro-interactions pattern). Scale is
+// gated behind `motion-safe:` for reduced-motion users.
 const baseClassName =
   "inline-flex items-center justify-center gap-2 rounded-md border border-transparent font-semibold transition motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100";
 
@@ -43,16 +39,7 @@ const variantClassName: Record<ButtonVariant, string> = {
   ghost: "bg-transparent text-primary-500 hover:bg-primary-50",
 };
 
-/**
- * LynkFlow's standard Button.
- *
- * This is the canonical button for every LynkFlow microfrontend.
- * Do not create a local Button component in an MFE — import this one
- * from `@lynkflow/ui-kit` instead.
- *
- * Consuming apps must import the compiled stylesheet once (typically in
- * the Shell): `import "@lynkflow/ui-kit/styles.css";`
- */
+/** LynkFlow's standard Button -- the canonical button for every microfrontend. */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -78,9 +65,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           baseClassName,
           sizeClassName[size],
           variantClassName[variant],
-          // Last, so a caller's utility beats the variant's in the same
-          // conflict group (colour, spacing, radius...) while the base
-          // layout/focus/disabled classes survive. See utils/cn.ts.
+          // Last, so a caller's utility can override same-group defaults (utils/cn.ts).
           className,
         )}
         {...rest}
